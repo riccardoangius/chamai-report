@@ -1,0 +1,19 @@
+diff --git a/node_modules/node-limesurvey/index.js b/node_modules/node-limesurvey/index.js
+index fa72589..d91c38f 100644
+--- a/node_modules/node-limesurvey/index.js
++++ b/node_modules/node-limesurvey/index.js
+@@ -106,6 +106,14 @@ class client {
+         return obj.responses
+     }
+ 
++    async getResponsesById(surveyId, responseId) {
++        var json = await this.callApi('export_responses', [surveyId, 'json', null, 'all', 'code', 'long', responseId, responseId])
++
++        let obj = JSON.parse(Buffer.from(json, 'base64').toString('utf-8'))
++
++        return obj.responses
++    }
++
+     async getResponsesByToken(surveyId, tokenId) {
+         var json = await this.callApi('export_responses_by_token', [surveyId, 'json', tokenId, null, 'all', 'code', 'long'])
+ 

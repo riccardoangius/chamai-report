@@ -1,0 +1,1 @@
+export { SectionScore } from "./sectionScore";
