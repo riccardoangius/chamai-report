@@ -1,7 +1,7 @@
 
 import { Fragment, useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
-import HTMLReactParser from 'html-react-parser';
+import HTMLReactParser, { domToReact } from 'html-react-parser';
 import { scoreColours, sectionNames } from '../common';
 import styles from './questions.module.css'
 
@@ -11,13 +11,12 @@ import { IoIosClose, IoIosArrowDown } from 'react-icons/io';
 
 const ScoredQuestion = props => {
 
-
     const { q } = props;
 
     if (q.serviceSection)
         return null;
 
-    const answer = q.answer || '-';
+    const answer = q.answer && HTMLReactParser(q.answer, { replace }) || '-';
     const colour = scoreColours[parseInt(answer)];
 
     const openResponse = q.systemSection && !q.multipleChoice;
@@ -33,9 +32,9 @@ const ScoredQuestion = props => {
                 {/* {q.title} */}
                 {/* &nbsp;{q.sectionId} - {q.questionId} - {q.systemSection.toString()} */}
                 {/* <br></br> */}
-                {HTMLReactParser(q.question, { replace })}
+                {!q.explanatoryNotes && HTMLReactParser(q.question, { replace })}
                 {/* {q.help && <div className={styles.refTrigger}>•••</div>}<div className={styles.ref}>{HTMLReactParser(q.help, { replace })}</div>*/}
-                {q.explanatoryNotes && <div>{HTMLReactParser(q.answer, { replace })}</div>}
+                {q.explanatoryNotes && <div>{answer}</div>}
             </div>
             <div className={styles.answer}>
                 {!q.explanatoryNotes && answer}
@@ -102,18 +101,18 @@ const scoreSorter = (a, b) => {
 }
 
 const replace = (node) => {
-    return node
-    // console.log(node);
-    console.log(node);
-
-    if (node.type == 'text')
-        return <Fragment>{node.data}</Fragment>
+    let cleanNode = node;
     // do not render any style
     if (node.type == 'tag' && node.attribs && node.attribs.style) {
+
         
-        node.attribs.style = null;
-        return HTMLReactParser(node.toString());
+        if (node.attribs.style)
+            node.attribs.style = null;
+        if (node.attribs.href)
+            node.attribs.target = "_blank";
     }
+    cleanNode = domToReact(node)
+    return cleanNode
     // return children for font tags
     if (node.type === 'tag' && node.name === 'font') {
         if (node.children.length == 1)
@@ -123,7 +122,7 @@ const replace = (node) => {
     if (node.type === 'tag' && node.name === 'p' && node.children.length == 1 && node.children[0].type == 'text') {
         const data = node.children[0].data.replace(/[\r\n]/g, "");
         if (data == '' && data.startsWith(' '))
-            return <Fragment/>;
+            return <Fragment />;
     }
 }
 
@@ -138,8 +137,8 @@ export const Menu = props => {
     const menuToggle = useMemo(() => (
         <span className={(menuOpen && styles.menuOpenToggle) || styles.menuToggle} onClick={handleClick}>
             <b>Explore answers</b>
-            
-            {menuOpen && <IoIosClose/> || <IoIosArrowDown />}
+
+            {menuOpen && <IoIosClose /> || <IoIosArrowDown />}
         </span>
     ), [menuOpen]);
 
