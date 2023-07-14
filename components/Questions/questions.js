@@ -1,6 +1,7 @@
 
 import { Fragment, useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+
 import HTMLReactParser, { domToReact } from 'html-react-parser';
 import { scoreColours, sectionNames } from '../common';
 import styles from './questions.module.css'
@@ -16,7 +17,7 @@ const ScoredQuestion = props => {
     if (q.serviceSection)
         return null;
 
-    const answer = q.answer && HTMLReactParser(q.answer, { replace }) || '-';
+    const answer = q.answer;
     const colour = scoreColours[parseInt(answer)];
 
     const openResponse = q.systemSection && !q.multipleChoice;
@@ -55,7 +56,7 @@ const QuestionIndicator = props => {
     if (q.systemSection)
         return;
 
-    const answer = q.answer || '-';
+    const answer = q.answer;
     const colour = scoreColours[parseInt(answer)];
 
     return (

@@ -21,7 +21,8 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.6.0",
     "react-loader-spinner": "^5.3.4",
-    "rooks": "^7.0.0"
+    "rooks": "^7.0.0",
+    "string-strip-html": "^13.4.1"
   },
   "devDependencies": {
     "eslint": "8.22.0",

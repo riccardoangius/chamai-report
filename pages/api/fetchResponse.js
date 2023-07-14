@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { stripHtml } from "string-strip-html";
 
 var limesurvey = require('node-limesurvey')({
   url: 'https://mudilabresearch.altervista.org:443/limesurvey/admin/remotecontrol',
@@ -40,11 +41,14 @@ export default async function handler(req, res) {
 
     let { questionId, sectionId, explanatoryNotes, systemSection, serviceSection } = questionCoords;
 
+    const rawAnswer = responses[q.title];
+
+    const answer = rawAnswer && stripHtml(rawAnswer).result || '-';
     return {
       ...q,
       title: q.title,
       explanatoryNotes,
-      answer: responses[q.title],
+      answer,
       questionId,
       sectionId,
       systemSection,
